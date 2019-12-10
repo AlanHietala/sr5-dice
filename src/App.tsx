@@ -1,26 +1,48 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useReducer } from 'react';
 import './App.css';
+import Pool from './Pool';
+import appReducer, { DicePool, Actions } from './appReducer';
+
+interface AppState {
+	dicePools: Array<DicePool>;
+}
+
+const initialState: AppState = {
+	dicePools: [
+		{
+			name: 'pool1',
+			poolSize: '10',
+			poolModifier: '0',
+			isExploding: false,
+			rolls: [],
+			hits: 0,
+		},
+	],
+};
 
 const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+	const [state, dispatch] = useReducer(appReducer, initialState);
+	return (
+		<div className="App">
+			<button
+				className="btn-action"
+				onClick={() => dispatch({ type: Actions.AddPool, payload: {} })}
+			>
+				Add Pool
+			</button>
+			{state.dicePools.map((pool, index) => (
+				<div key={index} className="pool-wrap">
+					<Pool state={pool} dispatch={dispatch} key={index} id={index} />
+					<button
+						className="btn-action"
+						onClick={() => dispatch({ type: Actions.RemovePool, payload: { index } })}
+					>
+						Remove
+					</button>
+				</div>
+			))}
+		</div>
+	);
+};
 
 export default App;
